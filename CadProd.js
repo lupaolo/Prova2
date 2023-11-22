@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TextInputMask } from 'react-native-masked-text';
 
 
 const CadProd = () => {
@@ -20,11 +21,31 @@ const CadProd = () => {
     nome: '',
     email: '',
     telefone: '',
-    endereco: '',
-    cpf: '',
+    dinheiro: '',
   });
   const [formList, setFormList] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const formatMoney = (value) => {
+    // Remove caracteres não numéricos
+    const cleanedValue = value.replace(/\D/g, '');
+
+    // Converte o valor para centavos
+    const cents = parseFloat(cleanedValue) / 100;
+
+    
+
+ 
+// Formata o valor como moeda em reais
+    const formattedMoney = cents.toLocaleString('pt-BR', {
+      
+    style: 'currency',
+      currency: 'BRL',
+    });
+
+
+    
+return formattedMoney;
+  };
 
   useEffect(() => {
     loadFormList();
@@ -42,7 +63,7 @@ const CadProd = () => {
   };
 
   const saveForm = async () => {
-    if (!formData.nome || !formData.email || !formData.telefone || !formData.endereco || !formData.cpf) {
+    if (!formData.nome || !formData.email || !formData.telefone || !formData.dinheiro || !formData.cpf) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios antes de salvar.');
       return;
     }
@@ -57,7 +78,7 @@ const CadProd = () => {
     }
 
     setFormList(updatedFormList);
-    setFormData({ id: '', nome: '', email: '', telefone: '', endereco: '', cpf:'' });
+    setFormData({ id: '', nome: '', email: '', telefone: '', dinheiro: '', cpf:'' });
     setEditingId(null);
 
     try {
@@ -111,13 +132,23 @@ const CadProd = () => {
         placeholder="ID de beneficiário"
         value={formData.telefone}
         onChangeText={(text) => setFormData({ ...formData, telefone: text })}
+        keyboardType="numeric"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Valor do produto"
-        value={formData.endereco}
-        onChangeText={(text) => setFormData({ ...formData, endereco: text })}
-      />
+       <TextInputMask
+          style={styles.input}
+          placeholder="Digite o valor"
+          type={'money'}
+          options={{
+            precision: 2,
+            separator: ',',
+            delimiter: '.',
+            unit: 'R$',
+            suffixUnit: '',
+          }}
+          value={formatMoney(formData.dinheiro)}
+          onChangeText={(text) => setFormData({ ...formData, dinheiro: formatMoney(text) })}
+        />
+
 
       <TextInput
         style={styles.input}

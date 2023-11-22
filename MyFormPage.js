@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { TextInputMask } from 'react-native-masked-text';
 
 
   // Function to handle button press and navigate to another screen
@@ -31,9 +32,50 @@ const MyFormPage = () => {
     telefone: '',
     endereco: '',
     cpf: '',
+    cnpj: '',
   });
   const [formList, setFormList] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const formatCnpj = (text) => {
+    // Remove caracteres não numéricos
+    
+  
+const cleanedText = text.replace(/\D/g, '');
+
+    // Aplica a máscara
+    const formattedCnpj = cleanedText.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+
+    return formattedCnpj;
+  };
+  const formatPhone = (text) => {
+    // Remove caracteres não numéricos
+    const cleanedText = text.replace(/\D/g, '');
+
+    
+
+  
+// Aplica a máscara
+    const formattedPhone = cleanedText.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+
+    return formattedPhone;
+  };
+  const formatCpf = (text) => {
+    // Remove caracteres não numéricos
+    const cleanedText = text.replace(/\D/g, '');
+
+    
+
+// Aplica a máscara
+    
+    
+const formattedCpf = cleanedText.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+
+    
+
+return formattedCpf;
+
+  };
+
 
   useEffect(() => {
     loadFormList();
@@ -51,8 +93,15 @@ const MyFormPage = () => {
   };
 
   const saveForm = async () => {
-    if (!formData.nome || !formData.email || !formData.telefone || !formData.endereco || !formData.cpf) {
+    if (!formData.nome || !formData.email || !formData.telefone || !formData.endereco || !formData.cpf || !formData.cnpj) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios antes de salvar.');
+    
+      return;
+    }
+    if (!formData.email.includes('@gmail.com')) {
+      Alert.alert('Atenção', 'O campo de email deve conter o caractere "@gmail.com"');
+      
+ 
       return;
     }
 
@@ -66,7 +115,7 @@ const MyFormPage = () => {
     }
 
     setFormList(updatedFormList);
-    setFormData({ id: '', nome: '', email: '', telefone: '', endereco: '', cpf:'' });
+    setFormData({ id: '', nome: '', email: '', telefone: '', endereco: '', cpf:'', cnpj:'' });
     setEditingId(null);
 
     try {
@@ -121,11 +170,17 @@ const MyFormPage = () => {
         value={formData.email}
         onChangeText={(text) => setFormData({ ...formData, email: text })}
       />
-      <TextInput
+       <TextInputMask
         style={styles.input}
         placeholder="Telefone"
-        value={formData.telefone}
-        onChangeText={(text) => setFormData({ ...formData, telefone: text })}
+        type={'cel-phone'}
+        options={{
+          maskType: 'BRL',
+          withDDD: true,
+          dddMask: '(99) ',
+        }}
+        value={formatPhone(formData.telefone)}
+        onChangeText={(text) => setFormData({ ...formData, telefone: formatPhone(text) })}
       />
       <TextInput
         style={styles.input}
@@ -134,11 +189,21 @@ const MyFormPage = () => {
         onChangeText={(text) => setFormData({ ...formData, endereco: text })}
       />
 
-      <TextInput
+<TextInputMask
         style={styles.input}
         placeholder="CPF"
-        value={formData.cpf}
-        onChangeText={(text) => setFormData({ ...formData, cpf: text })}
+        type={'cpf'}
+        value={formatCpf(formData.cpf)}
+        onChangeText={(text) => setFormData({ ...formData, cpf: formatCpf(text) })}
+      />
+
+<TextInputMask
+        style={styles.input}
+        placeholder="CNPJ"
+        type={'cnpj'}
+        value={formatCnpj(formData.cnpj)}
+        onChangeText={(text) => setFormData({ ...formData, cnpj: formatCnpj(text) })}
+        keyboardType="numeric"
       />
 
 

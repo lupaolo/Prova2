@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TextInputMask } from 'react-native-masked-text';
 
 
 const Cadjob = () => {
@@ -22,10 +23,35 @@ const Cadjob = () => {
     telefone: '',
     endereco: '',
     cpf: '',
-    authorize: false,
+    rg:'',
   });
   const [formList, setFormList] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const formatRg = (text) => {
+    // Remove caracteres não numéricos
+    const cleanedText = text.replace(/\D/g, '');
+
+    // Aplica a máscara
+    const formattedRg = cleanedText.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, '$1.$2.$3-$4');
+
+    return formattedRg;
+  };
+  const formatCpf = (text) => {
+    // Remove caracteres não numéricos
+    const cleanedText = text.replace(/\D/g, '');
+
+    
+
+// Aplica a máscara
+    
+    
+const formattedCpf = cleanedText.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+
+    
+
+return formattedCpf;
+
+};
 
   useEffect(() => {
     loadFormList();
@@ -43,8 +69,14 @@ const Cadjob = () => {
   };
 
   const saveForm = async () => {
-    if (!formData.nome || !formData.email || !formData.telefone || !formData.endereco || !formData.cpf) {
+    if (!formData.nome || !formData.email || !formData.telefone || !formData.endereco || !formData.cpf, !formData.rg) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios antes de salvar.');
+      return;
+    }
+    if (!formData.email.includes('@gmail.com')) {
+      Alert.alert('Atenção', 'O campo de email deve conter o caractere "@gmail.com"');
+      
+ 
       return;
     }
 
@@ -58,7 +90,7 @@ const Cadjob = () => {
     }
 
     setFormList(updatedFormList);
-    setFormData({ id: '', nome: '', email: '', telefone: '', endereco: '', cpf:'' });
+    setFormData({ id: '', nome: '', email: '', telefone: '', endereco: '', cpf:'',rg:'' });
     setEditingId(null);
 
     try {
@@ -108,24 +140,29 @@ const Cadjob = () => {
         value={formData.email}
         onChangeText={(text) => setFormData({ ...formData, email: text })}
       />
-      <TextInput
+      <TextInputMask
         style={styles.input}
-        placeholder="Cpf"
-        value={formData.telefone}
-        onChangeText={(text) => setFormData({ ...formData, telefone: text })}
+        placeholder="CPF"
+        type={'cpf'}
+        value={formatCpf(formData.cpf)}
+        onChangeText={(text) => setFormData({ ...formData, cpf: formatCpf(text) })}
       />
-      <TextInput
+
+      <TextInputMask
         style={styles.input}
         placeholder="RG"
-        value={formData.endereco}
-        onChangeText={(text) => setFormData({ ...formData, endereco: text })}
+        type={'custom'}
+        options={{ mask: '99.999.999-9' }}
+        value={formatRg(formData.rg)}
+        onChangeText={(text) => setFormData({ ...formData, rg: formatRg(text) })}
+        keyboardType="numeric"
       />
 
       <TextInput
         style={styles.input}
-        placeholder="linkedin"
-        value={formData.cpf}
-        onChangeText={(text) => setFormData({ ...formData, cpf: text })}
+        placeholder="endereçoo"
+        value={formData.endereco}
+        onChangeText={(text) => setFormData({ ...formData, endereco: text })}
       />
 
 
