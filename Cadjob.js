@@ -160,7 +160,7 @@ return formattedCpf;
 
       <TextInput
         style={styles.input}
-        placeholder="endereçoo"
+        placeholder="endereço"
         value={formData.endereco}
         onChangeText={(text) => setFormData({ ...formData, endereco: text })}
       />

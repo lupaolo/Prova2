@@ -22,6 +22,7 @@ const CadProd = () => {
     email: '',
     telefone: '',
     dinheiro: '',
+    cep:'',
   });
   const [formList, setFormList] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -63,7 +64,7 @@ return formattedMoney;
   };
 
   const saveForm = async () => {
-    if (!formData.nome || !formData.email || !formData.telefone || !formData.dinheiro || !formData.cpf) {
+    if (!formData.nome || !formData.email || !formData.telefone || !formData.dinheiro || !formData.cep) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios antes de salvar.');
       return;
     }
@@ -78,7 +79,7 @@ return formattedMoney;
     }
 
     setFormList(updatedFormList);
-    setFormData({ id: '', nome: '', email: '', telefone: '', dinheiro: '', cpf:'' });
+    setFormData({ id: '', nome: '', email: '', telefone: '', dinheiro: '', cep:'' });
     setEditingId(null);
 
     try {
@@ -150,12 +151,17 @@ return formattedMoney;
         />
 
 
-      <TextInput
-        style={styles.input}
-        placeholder="local de exportação"
-        value={formData.cpf}
-        onChangeText={(text) => setFormData({ ...formData, cpf: text })}
-      />
+<TextInputMask
+          style={styles.input}
+          placeholder="CEP"
+          type={'custom'}
+          options={{
+            mask: '99999-999',
+          }}
+          value={formData.cep}
+          onChangeText={(text) => setFormData({ ...formData, cep: text })}
+          keyboardType="numeric"
+        />
 
 
       <Button title={editingId ? 'Atualizar' : 'Salvar'} onPress={saveForm} />
